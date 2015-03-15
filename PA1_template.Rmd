@@ -17,6 +17,7 @@ The data used in this report was obtained <a href="<https://d396qusza40orc.cloud
 setwd("~/data")
 rm(list = ls())
 library(dplyr)
+library(ggplot2)
 ```
 
 
@@ -48,7 +49,7 @@ colnames(intstepsmean) <- c("interval", "meansteps")
 ##What is mean total number of steps taken per day? 
 Using a simple histogram, we get an idea of the average daily total steps. As shown below, the mean and median number of steps are both around 10,700. 
 
-```{r part2, echo=TRUE, dependson=2}
+```{r part2, echo=TRUE, dependson=2, cache=TRUE}
 #calculate mean and median
 mean <- mean(stepsbydate$steps, na.rm=TRUE)
 median <- median(stepsbydate$steps, na.rm=TRUE)
@@ -78,4 +79,54 @@ abline(v=maxint, lty=3, lwd=2, col="red")
 text(maxint, maxstep, labels=paste("Max. Steps=", as.character(round(maxstep))), col="red", pos=4)
 text(maxint, maxstep-15 , labels=paste("Interval=", as.character(maxint)), col="red", pos=4)
 ```
+
+##Imputing missing values
+The original dataset had a missing values, signified by "NA", which we initially ignored. First we figure out how many missing values there are:
+```{r part4, dependson=2, cache=TRUE}
+complete <- complete.cases(activity)
+missing <-length(complete[complete==FALSE])
+present <- length(complete[complete==TRUE])
+rbind(missing,present)
+```
+
+There are `r missing` missing values, and `r complete` complete cases in the original dataset. To fill in this data, we can use the average values from each 5-minute interval. We could have also used the daily average, but since the previous plot showed that there is a lot of variation by time of day, it seems "safer" to use the average at each 5-min interval.
+
+To do this, we go back to the original dataset. We also use the `complete` logical vector, and the interval means dataset (`intstepsmean`) created for the second plot. The dplyr function `group_by()` was usd before, but now we want to create a lookup vectors. 
+
+```{r part5, dependson=c(2,5)}
+act2<-activity
+for (i in 1:nrow(act2)) {
+    if (is.na(act2$steps[i])) {
+        act2$steps[i] <- intstepsmean[which(act2$interval[i] == intstepsmean$interval), ]$meansteps
+    }
+}
+sum(is.na(act2)) #check that there's no more NAs
+head(act2)
+```
+
+**Did the data change by our "impute" procedure?**
+Let's calculate the mean and median of our new dataset and make a histogram to compare to the old one. 
+
+```{r part6, dependson=c(2,3,5)}
+bydate2 <- group_by(act2, date) 
+stepsbydate2 <- summarize(bydate2, sum(steps))
+colnames(stepsbydate2) <- c("date", "steps")
+mean2 <- mean(stepsbydate2$steps)
+median2 <- median(stepsbydate2$steps)
+par(mfrow=c(1,2))
+#New imputed data
+hist(stepsbydate2$steps, breaks=5, main="Total Steps per day\n Imputed", xlab="Total Daily Steps", col="red")
+abline(v=mean, lty=2, col="black")
+abline(v=median, lty=4, col="blue")
+text(mean, 24, labels=paste0("mean=",signif(mean2, digits=7)), pos=4, col="black")
+text(median, 22, labels=paste0("median=",signif(median2, digits=7)), pos=4, col="blue")
+#Old (non imputed data)
+hist(stepsbydate$steps, breaks=5, main="Total Steps per day, original", xlab="Total Daily Steps", col="red")
+abline(v=mean, lty=2, col="black")
+abline(v=median, lty=4, col="blue")
+text(mean, 24, labels=paste0("mean=",signif(mean, digits=7)), pos=4, col="black")
+text(median, 22, labels=paste0("median=",signif(median, digits=7)), pos=4, col="blue")
+```
+
+The mean and median have not changed much by "imputing" the missing data. The main effect of the imputation is that the frequencies at each histogram bin has increased. 
 
