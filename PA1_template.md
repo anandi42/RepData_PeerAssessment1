@@ -6,8 +6,7 @@ output:
     fig_height: 4.5
     fig_width: 6.5
     keep_md: yes
-    self_contained: no
-    base.dir: "~/figure"
+    self_contained: yes    
 ---
 
 ##Introduction
