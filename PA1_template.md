@@ -14,11 +14,7 @@ output:
 Personal activity monitoring devices allow users to collect a large amount of data about themselves. In this report, we will analyze of set of such data.  
 The data used in this report was obtained <a href="<https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip">here (link is to zip file).</a>  
 
-```{r steup, echo=FALSE, results='hide', message=FALSE, cache=TRUE}
-setwd("~/data")
-rm(list = ls())
-library(dplyr)
-```
+
 
 
 ##Load and Process Data 
@@ -30,12 +26,26 @@ First, we need to load and read in the data. We can see that the data consists o
 
 In addition, we will do a few pre-processing steps -- which will create dataframes that summarize the daily steps by date, and also by interval (time of day).
 
-```{r part1, echo=TRUE, dependson=1, cache=TRUE}
+
+```r
 fileurl="http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 download.file(fileurl, destfile="activity.zip")
 #This is the main data
 activity <- read.csv(unz("activity.zip","activity.csv"))
 head(activity) 
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
+```r
 #New dataframe by day 
 bydate <- group_by(activity, date) 
 stepsbydate <- summarize(bydate, sum(steps))
@@ -49,7 +59,8 @@ colnames(intstepsmean) <- c("interval", "meansteps")
 ##What is mean total number of steps taken per day? 
 Using a simple histogram, we get an idea of the average daily total steps. As shown below, the mean and median number of steps are both around 10,700. 
 
-```{r part2, echo=TRUE, dependson=2}
+
+```r
 #calculate mean and median
 mean <- mean(stepsbydate$steps, na.rm=TRUE)
 median <- median(stepsbydate$steps, na.rm=TRUE)
@@ -61,12 +72,15 @@ text(mean, 24, labels=paste0("mean=",signif(mean, digits=7)), pos=4, col="black"
 text(median, 22, labels=paste0("median=",signif(median, digits=7)), pos=4, col="blue")
 ```
 
+![plot of chunk part2](figure/part2-1.png) 
+
 ##What is the average daily activity pattern?
 Earlier, a dataframe reporting average steps by each 5-min interval was created, so we can use that dataframe to make a line plot of activity at each 5-minute interval, averaged over all days. In the dataset, the 5-minute intervals are identified by an index from 0 to 2355.  
 We also want to answer the question **"Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?"**  
 The answer to this, as shown in the plot, is 206 steps (rounded to the nearest integer). The interval that corresponds to the max steps is "835", or 8:35-8:40 AM. 
 
-```{r part3, echo=TRUE, dependson=2}
+
+```r
 #calculate maximum avg. steps and its matching interval
 maxint<-intstepsmean$interval[which.max(intstepsmean$meansteps)]
 maxstep<-max(intstepsmean$meansteps)
@@ -79,4 +93,6 @@ abline(v=maxint, lty=3, lwd=2, col="red")
 text(maxint, maxstep, labels=paste("Max. Steps=", as.character(round(maxstep))), col="red", pos=4)
 text(maxint, maxstep-15 , labels=paste("Interval=", as.character(maxint)), col="red", pos=4)
 ```
+
+![plot of chunk part3](figure/part3-1.png) 
 
