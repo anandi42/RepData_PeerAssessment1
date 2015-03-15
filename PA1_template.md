@@ -113,7 +113,7 @@ rbind(missing,present)
 
 There are 2304 missing values, and 15264 complete cases in the original dataset. To fill in this data, we can use the average values from each 5-minute interval. We could have also used the daily average, but since the previous plot showed that there is a lot of variation by time of day, it seems "safer" to use the average at each 5-min interval.
 
-To do this, we go back to the original dataset. We also use the `complete` logical vector, and the interval means dataset (`intstepsmean`) created for the second plot. The dplyr function `group_by()` was usd before, but now we want to create a lookup vectors. 
+To do this, we go back to the original dataset. We also use the `complete` logical vector, and the interval means dataset (`intstepsmean`) created for the second plot.
 
 
 ```r
