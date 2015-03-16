@@ -173,3 +173,32 @@ text(median, 22, labels=paste0("median=",signif(median, digits=7)), pos=4, col="
 
 The mean and median have not changed much by "imputing" the missing data. The main effect of the imputation is that the frequencies at each histogram bin has increased. 
 
+##Are there differences in activity patterns between weekdays and weekends?
+
+
+```r
+#change date format in dataset
+act2$date <- as.Date(strptime(act2$date, format="%Y-%m-%d"))
+act2$dow <- weekdays(act2$date)
+#Make the variable dow a factor with 2 levels
+for (i in 1:nrow(act2)) {                                       
+    if (act2[i,]$dow %in% c("Saturday","Sunday")) {             
+        act2[i,]$dow<-"Weekend"                               
+    }
+    else{
+       act2[i,]$dow<-"Weekday"                                
+    }
+}
+act2_weekend <- group_by(act2, interval, dow)
+weekend <- summarize(act2_weekend, mean(steps))
+colnames(weekend)<- c("interval", "partofweek", "steps" )
+plot <- ggplot(weekend, aes(x=interval, y=steps)) + geom_line() + facet_grid(.~partofweek, scales="free", space="free")
+plot <- plot + labs(x="Interval", y="Mean Steps", title="Mean Steps by 5-min Interval\n Weekend vs. Weekdays") 
+print(plot)
+```
+
+![plot of chunk part7](figure/part7-1.png) 
+From this plot, we see that our anonymous walker walks more during weekends, but each weekday, there is a lot of walking right near the interval at 830 (which we sort of knew from before). The final graph gives us a clue as to the overall walking pattern: More walking on weekends, but on weekdays, our person does a lot of walking around ~8:30AM. This pattern fits with a person who maybe walks to work everyday, and then takes a lot of walks on weekend days. 
+
+
+
