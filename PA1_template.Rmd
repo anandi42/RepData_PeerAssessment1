@@ -62,7 +62,7 @@ text(mean, 24, labels=paste0("mean=",signif(mean, digits=7)), pos=4, col="black"
 text(median, 22, labels=paste0("median=",signif(median, digits=7)), pos=4, col="blue")
 ```
 
-We see that the the mean, ` r mean` is pretty close to the median, `r median`. 
+We see that the the mean, `r mean` is pretty close to the median, `r median`. 
 
 ##What is the average daily activity pattern?
 Earlier, a dataframe reporting average steps by each 5-min interval was created, so we can use that dataframe to make a line plot of activity at each 5-minute interval, averaged over all days. In the dataset, the 5-minute intervals are identified by an index from 0 to 2355.  
