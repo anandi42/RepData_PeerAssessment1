@@ -11,7 +11,8 @@ output:
 
 ##Introduction
 Personal activity monitoring devices allow users to collect a large amount of data about themselves. In this report, we will analyze of set of such data.  
-The data used in this report was obtained <a href="<https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip">here (link is to zip file).</a>  
+The data used in this report was obtained <a href="https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip">here (link is to zip file).</a>  
+
 
 
 
@@ -56,7 +57,7 @@ colnames(intstepsmean) <- c("interval", "meansteps")
 ```
 
 ##What is mean total number of steps taken per day? 
-Using a simple histogram, we get an idea of the average daily total steps. As shown below, the mean and median number of steps are both around 10,700. 
+Using a simple histogram, we get an idea of the average daily total steps. 
 
 
 ```r
@@ -73,10 +74,10 @@ text(median, 22, labels=paste0("median=",signif(median, digits=7)), pos=4, col="
 
 ![plot of chunk part2](figure/part2-1.png) 
 
+We see that the the mean, ` r mean` is pretty close to the median, 10765. 
+
 ##What is the average daily activity pattern?
 Earlier, a dataframe reporting average steps by each 5-min interval was created, so we can use that dataframe to make a line plot of activity at each 5-minute interval, averaged over all days. In the dataset, the 5-minute intervals are identified by an index from 0 to 2355.  
-We also want to answer the question **"Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?"**  
-The answer to this, as shown in the plot, is 206 steps (rounded to the nearest integer). The interval that corresponds to the max steps is "835", or 8:35-8:40 AM. 
 
 
 ```r
@@ -95,8 +96,11 @@ text(maxint, maxstep-15 , labels=paste("Interval=", as.character(maxint)), col="
 
 ![plot of chunk part3](figure/part3-1.png) 
 
+We also want to answer the question **"Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?"**  
+The answer to this, as shown in the plot, is 206.1698113 steps (rounded to the nearest integer). The interval that corresponds to the max steps is 835, or 8:35-8:40 AM. 
+
 ##Imputing missing values
-The original dataset had a missing values, signified by "NA", which we initially ignored. First we figure out how many missing values there are:
+The original dataset had a missing values, signified by "NA", which we initially ignored. First we figure out how many missing values there are.
 
 ```r
 complete <- complete.cases(activity)
@@ -113,7 +117,7 @@ rbind(missing,present)
 
 There are 2304 missing values, and 15264 complete cases in the original dataset. To fill in this data, we can use the average values from each 5-minute interval. We could have also used the daily average, but since the previous plot showed that there is a lot of variation by time of day, it seems "safer" to use the average at each 5-min interval.
 
-To do this, we go back to the original dataset. We also use the `complete` logical vector, and the interval means dataset (`intstepsmean`) created for the second plot.
+To do this, we go back to the original dataset. We also use the interval means dataset (`intstepsmean`) created for the second plot, which provides us the mean interval values to substitute in at each missing datapoint.
 
 
 ```r
