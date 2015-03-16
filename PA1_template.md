@@ -74,7 +74,7 @@ text(median, 22, labels=paste0("median=",signif(median, digits=7)), pos=4, col="
 
 ![plot of chunk part2](figure/part2-1.png) 
 
-We see that the the mean, 1.0766189 &times; 10<sup>4</sup> is pretty close to the median, 10765. 
+We see that the the mean, 1.076619 &times; 10<sup>4</sup> is pretty close to the median, 1.0765 &times; 10<sup>4</sup>. 
 
 ##What is the average daily activity pattern?
 Earlier, a dataframe reporting average steps by each 5-min interval was created, so we can use that dataframe to make a line plot of activity at each 5-minute interval, averaged over all days. In the dataset, the 5-minute intervals are identified by an index from 0 to 2355.  
