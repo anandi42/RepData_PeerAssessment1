@@ -4,3 +4,5 @@ lubridate
 knitr
 ggplot2
 reshape
+reshape2
+gridExtra
