@@ -48,7 +48,7 @@ byint <- summarize(group_by(activity, interval), steps=mean(steps, na.rm=TRUE))
 ##What is mean total number of steps taken per day? 
 Using a simple histogram, we get an idea of the average daily total steps. Additionally, the mean and median of the data are reported in the annotation in the plot below.  
 
-```{r part2, echo=TRUE, dependson=2, cache=TRUE, results='asis'}
+```{r part2, echo=TRUE, dependson=2, cache=TRUE}
 plot <- ggplot(data=bydate, aes(bydate$steps))
 plot1 <- plot + geom_histogram(stat="bin",
                                binwidth=3000,
@@ -92,7 +92,7 @@ data.frame(Missing=missing, Complete=present)
 
 There are `r missing` missing values, and `r present` complete cases in the original dataset. To fill in this data, we can use the average values from each 5-minute interval. We could have also used the daily average, but since the previous plot showed that there is a lot of variation by time of day, it seems "safer" to use the average at each 5-min interval.
 
-To do this, we go back to the original dataset. We also use the interval means dataset (`intstepsmean`) created for the second plot, which provides us the mean interval values to substitute in at each missing datapoint.
+To do this, we go back to the original dataset. We also use the interval means dataset (`byint`) created for the second plot, which provides us the mean interval values to substitute in at each missing datapoint.
 
 ```{r part5, dependson=c(2,5), cache=TRUE}
 act2<-activity

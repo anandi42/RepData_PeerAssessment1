@@ -83,8 +83,10 @@ print(plot1)
 data.frame(Mean=mean(bydate$steps, na.rm=TRUE), Median=median(bydate$steps, na.rm=TRUE))
 ```
 
-      Mean Median
-1 10766.19  10765
+```
+##       Mean Median
+## 1 10766.19  10765
+```
 
 ##What is the average daily activity pattern?
 Earlier, a dataframe reporting average steps by each 5-min interval was created, so we can use that dataframe to make a line plot of activity at each 5-minute interval, averaged over all days. In the dataset, the 5-minute intervals are identified by an index from 0 to 2355.  
@@ -134,7 +136,7 @@ data.frame(Missing=missing, Complete=present)
 
 There are 2304 missing values, and 15264 complete cases in the original dataset. To fill in this data, we can use the average values from each 5-minute interval. We could have also used the daily average, but since the previous plot showed that there is a lot of variation by time of day, it seems "safer" to use the average at each 5-min interval.
 
-To do this, we go back to the original dataset. We also use the interval means dataset (`intstepsmean`) created for the second plot, which provides us the mean interval values to substitute in at each missing datapoint.
+To do this, we go back to the original dataset. We also use the interval means dataset (`byint`) created for the second plot, which provides us the mean interval values to substitute in at each missing datapoint.
 
 
 ```r
