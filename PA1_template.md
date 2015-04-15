@@ -11,7 +11,7 @@ output:
 
 ##Introduction
 Personal activity monitoring devices allow users to collect a large amount of data about themselves. In this report, we will analyze of set of such data.  
-The data used in this report was obtained <a href="https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip">here (link is to zip file).</a>  
+The data used in this report was obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip) (link is to zip file).
 
 
 
@@ -29,7 +29,17 @@ In addition, we will do a few pre-processing steps -- which will create datafram
 
 ```r
 fileurl="http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
-download.file(fileurl, destfile="activity.zip")
+filename <- "activity.zip"
+if (file.exists(filename)) {
+  print("File present!")
+  } else {download.file(fileurl, destfile="activity.zip")}
+```
+
+```
+## [1] "File present!"
+```
+
+```r
 #This is the main data
 activity <- read.csv(unz("activity.zip","activity.csv"))
 head(activity) 
@@ -46,55 +56,62 @@ head(activity)
 ```
 
 ```r
-#New dataframe by day 
-bydate <- group_by(activity, date) 
-stepsbydate <- summarize(bydate, sum(steps))
-colnames(stepsbydate) <- c("date", "steps")
-#New dataframe by interval
-byint <- group_by(activity, interval) 
-intstepsmean <-summarize(byint, mean(steps, na.rm=TRUE))
-colnames(intstepsmean) <- c("interval", "meansteps")
+#New dataframes by day and by interval
+bydate <- summarize(group_by(activity, date), steps=sum(steps))
+byint <- summarize(group_by(activity, interval), steps=mean(steps, na.rm=TRUE))
 ```
 
 ##What is mean total number of steps taken per day? 
-Using a simple histogram, we get an idea of the average daily total steps. 
+Using a simple histogram, we get an idea of the average daily total steps. Additionally, the mean and median of the data are reported in the annotation in the plot below.  
 
 
 ```r
-#calculate mean and median
-mean <- mean(stepsbydate$steps, na.rm=TRUE)
-median <- median(stepsbydate$steps, na.rm=TRUE)
-#plot with lines and text to report mean and median
-hist(stepsbydate$steps, breaks=5, main="Total Steps per day", xlab="Total Daily Steps", col="red")
-abline(v=mean, lty=2, col="black")
-abline(v=median, lty=4, col="blue")
-text(mean, 24, labels=paste0("mean=",signif(mean, digits=7)), pos=4, col="black")
-text(median, 22, labels=paste0("median=",signif(median, digits=7)), pos=4, col="blue")
+plot <- ggplot(data=bydate, aes(bydate$steps))
+plot1 <- plot + geom_histogram(stat="bin",
+                               binwidth=3000,
+                               color="blue", 
+                               fill="white")
+plot1 <- plot1 + labs(title="Total number of steps taken per day",
+                      x="Total steps per day",
+                      y="Count of summed steps")
+print(plot1)
 ```
 
 ![plot of chunk part2](figure/part2-1.png) 
 
-We see that the the mean, 1.076619 &times; 10<sup>4</sup> is pretty close to the median, 1.0765 &times; 10<sup>4</sup>. 
+```r
+data.frame(Mean=mean(bydate$steps, na.rm=TRUE), Median=median(bydate$steps, na.rm=TRUE))
+```
+
+      Mean Median
+1 10766.19  10765
 
 ##What is the average daily activity pattern?
 Earlier, a dataframe reporting average steps by each 5-min interval was created, so we can use that dataframe to make a line plot of activity at each 5-minute interval, averaged over all days. In the dataset, the 5-minute intervals are identified by an index from 0 to 2355.  
 
 
 ```r
-#calculate maximum avg. steps and its matching interval
-maxint<-intstepsmean$interval[which.max(intstepsmean$meansteps)]
-maxstep<-max(intstepsmean$meansteps)
-plot(intstepsmean, type="l", 
-     main="Average Daily Activity\n in 5-minute intervals",
-     xlab="Interval",
-     ylab="Average Steps Taken"
-     )
-abline(v=maxint, lty=3, lwd=2, col="red")
-text(maxint, maxstep, labels=paste("Max. Steps=", as.character(round(maxstep))), col="red", pos=4)
-text(maxint, maxstep-15 , labels=paste("Interval=", as.character(maxint)), col="red", pos=4)
+plot2 <- ggplot(data=byint, aes(x=interval, y=steps))
+plot2 <- plot2 + geom_line() +
+  labs(title="Average Daily Activity\n in 5-minute intervals",
+     x="Interval",
+     y="Average Steps Taken")
+plot2
 ```
 
 ![plot of chunk part3](figure/part3-1.png) 
+
+```r
+#calculate maximum avg. steps and its matching interval
+maxint<-byint$interval[which.max(byint$steps)]
+maxstep<-max(intstepsmean$meansteps)
+data.frame(Max_Interval=maxint, Max_Steps=maxstep)
+```
+
+```
+##   Max_Interval Max_Steps
+## 1          835  206.1698
+```
 
 We also want to answer the question **"Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?"**  
 The answer to this, as shown in the plot, is 206.1698113 steps (rounded to the nearest integer). The interval that corresponds to the max steps is 835, or 8:35-8:40 AM. 
@@ -102,17 +119,17 @@ The answer to this, as shown in the plot, is 206.1698113 steps (rounded to the n
 ##Imputing missing values
 The original dataset had a missing values, signified by "NA", which we initially ignored. First we figure out how many missing values there are.
 
+
 ```r
 complete <- complete.cases(activity)
 missing <-length(complete[complete==FALSE])
 present <- length(complete[complete==TRUE])
-rbind(missing,present)
+data.frame(Missing=missing, Complete=present)
 ```
 
 ```
-##          [,1]
-## missing  2304
-## present 15264
+##   Missing Complete
+## 1    2304    15264
 ```
 
 There are 2304 missing values, and 15264 complete cases in the original dataset. To fill in this data, we can use the average values from each 5-minute interval. We could have also used the daily average, but since the previous plot showed that there is a lot of variation by time of day, it seems "safer" to use the average at each 5-min interval.
@@ -124,7 +141,7 @@ To do this, we go back to the original dataset. We also use the interval means d
 act2<-activity
 for (i in 1:nrow(act2)) {
     if (is.na(act2$steps[i])) {
-        act2$steps[i] <- intstepsmean[which(act2$interval[i] == intstepsmean$interval), ]$meansteps
+        act2$steps[i] <- byint[which(act2$interval[i] == byint$interval), ]$steps
     }
 }
 sum(is.na(act2)) #check that there's no more NAs
@@ -149,31 +166,33 @@ head(act2)
 ```
 
 **Did the data change by our "impute" procedure?**
-Let's calculate the mean and median of our new dataset and make a histogram to compare to the old one. 
+To look at the effect of [fill in]
 
 
 ```r
-bydate2 <- group_by(act2, date) 
-stepsbydate2 <- summarize(bydate2, sum(steps))
-colnames(stepsbydate2) <- c("date", "steps")
-mean2 <- mean(stepsbydate2$steps)
-median2 <- median(stepsbydate2$steps)
-par(mfrow=c(1,2))
-#New imputed data
-hist(stepsbydate2$steps, breaks=5, main="Total Steps per day\n Imputed", xlab="Total Daily Steps", col="red")
-abline(v=mean, lty=2, col="black")
-abline(v=median, lty=4, col="blue")
-text(mean, 24, labels=paste0("mean=",signif(mean2, digits=7)), pos=4, col="black")
-text(median, 22, labels=paste0("median=",signif(median2, digits=7)), pos=4, col="blue")
-#Old (non imputed data)
-hist(stepsbydate$steps, breaks=5, main="Total Steps per day, original", xlab="Total Daily Steps", col="red")
-abline(v=mean, lty=2, col="black")
-abline(v=median, lty=4, col="blue")
-text(mean, 24, labels=paste0("mean=",signif(mean, digits=7)), pos=4, col="black")
-text(median, 22, labels=paste0("median=",signif(median, digits=7)), pos=4, col="blue")
+bydate2 <- summarize(group_by(act2, date), steps=sum(steps))
+bydate_all <- data.frame(date=bydate$date, imputed=bydate2$steps, orig=bydate$steps)
+plotdata <- melt(bydate_all, id="date")
+plot3 <- ggplot(data=plotdata, aes(x=value, fill=variable))
+plot3 <- plot3 + geom_histogram(stat="bin", binwidth=3000, position="dodge")
+plot3
 ```
 
 ![plot of chunk part6](figure/part6-1.png) 
+
+```r
+means <- rbind(mean(bydate$steps, na.rm=TRUE),median(bydate$steps,na.rm=TRUE),mean(bydate2$steps),median(bydate2$steps))
+labels <- c("Orig. Mean", "Orig. Median", "Imputed Mean", "Imputed Median")
+cbind(labels, means)
+```
+
+```
+##      labels                             
+## [1,] "Orig. Mean"     "10766.1886792453"
+## [2,] "Orig. Median"   "10765"           
+## [3,] "Imputed Mean"   "10766.1886792453"
+## [4,] "Imputed Median" "10766.1886792453"
+```
 
 The mean and median have not changed much by "imputing" the missing data. The main effect of the imputation is that the frequencies at each histogram bin has increased. 
 
