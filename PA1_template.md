@@ -1,4 +1,12 @@
-# Reproducible Research Peer Assesment 1
+---
+title: "Reproducible Research Peer Assesment 1"
+output:
+  html_document:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 6
+    keep_md: yes
+---
 
 ##Introduction
 Personal activity monitoring devices allow users to collect a large amount of data about themselves. In this report, we will analyze of set of such data.  
@@ -92,7 +100,7 @@ plot1 <- plot1 +
 grid.arrange(plot1, tableGrob(table1), nrow=2, heights=c(1,0.1))
 ```
 
-![Distribution of total daily steps](PA1_template_files/figure-html/plot1-1.png) 
+![Distribution of total daily steps](figure/plot1-1.png) 
 
 ##What is the average daily activity pattern?
 The dataframe byint contains the average steps at each 5-min interval. Each interval is averaged across all days reported in the data (currently with NAs removed). We can use that dataframe to make a line plot and annotate the plot with the maximum average steps taken and the 5-minute interval in which it happened. 
@@ -114,7 +122,7 @@ plot2 <- plot2 + geom_line(color="red") +
 grid.arrange(plot2, tableGrob(table2), nrow=2, heights=c(1,0.1))
 ```
 
-![Daily Activity Pattern](PA1_template_files/figure-html/plot2-1.png) 
+![Daily Activity Pattern](figure/plot2-1.png) 
 
 
 ##Imputing missing values
@@ -198,7 +206,7 @@ plot1 <- plot1 + ylim(0,22)
 grid.arrange(plot3, plot1, tableGrob(table3), nrow=3, heights=c(1,1,0.25))
 ```
 
-![Before and After Imputing Missing Data](PA1_template_files/figure-html/plot3-1.png) 
+![Before and After Imputing Missing Data](figure/plot3-1.png) 
 
 We can confirm that the mean and median have not changed much in the imputed data. After imputation, the mean and median are closer to each other. We expected that the mean should not change since the average daily pattern was used to impute. The histogram shows that the main effect was to increase the number of counts in the bin that contains the mean and median. 
 
@@ -236,7 +244,7 @@ plot4 <- plot4 +
 plot4
 ```
 
-![Daily activity on Weekdays vs. Weekends](PA1_template_files/figure-html/plot4-1.png) 
+![Daily activity on Weekdays vs. Weekends](figure/plot4-1.png) 
 
 From this plot, we see that on weekends, there are more intervals where the number of steps is >100. On weekdays, there is a peak of activity in the mornings, around 8-9AM. So the overall activity on weekends seems to be higher but the weekdays have the biggest 5-min peak, at 8:30. This pattern fits with a person who takes a walk every weekday morning, or walks to work. This person's weekends are fairly active, and they seem to spend a greater part of the weekend days moving around. 
 
