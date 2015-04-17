@@ -1,12 +1,5 @@
----
-title: "Reproducible Research Peer Assesment 1"
-output:
-  html_document:
-    fig_caption: yes
-    fig_height: 4.5
-    fig_width: 6.5
-    keep_md: yes
----
+# Reproducible Research Peer Assesment 1
+
 ##Introduction
 Personal activity monitoring devices allow users to collect a large amount of data about themselves. In this report, we will analyze of set of such data.  
 The data used in this report was obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).
@@ -18,9 +11,11 @@ setwd("~/data")
 rm(list = ls())
 library(dplyr)
 library(ggplot2)
-library(reshape2)
+library(scales)
 library(gridExtra)
 library(lubridate)
+library(knitr)
+opts_chunk$set(cache=TRUE, echo=TRUE)
 ```
 
 
@@ -71,10 +66,13 @@ act_clean <- activity[!is.na(activity$steps),]
 bydate <- act_clean %>%
           group_by(date) %>%
           summarize(steps=sum(steps)) 
-          
+      
 byint <- act_clean %>%
           group_by(interval) %>%
           summarize(steps=mean(steps))
+#creating a as.POSIXct interval datetime variable and adding a dummy YMD to the intervals
+byint_plot <- byint 
+byint_plot$timeint<-parse_date_time(paste("2012-10-01",sprintf("%04d",byint_plot$interval)), "Y!m*!d!H!M!")
 ```
 
 ##What is mean total number of steps taken per day?
@@ -82,20 +80,19 @@ To answer the question, we plot a histogram of the dataset bydate, which contain
 
 
 ```r
-means <- data.frame(Mean=signif(mean(bydate$steps), digits=7), Median=signif(median(bydate$steps), digits=7))
+table1 <- data.frame(Mean=sprintf("%1.3f",mean(bydate$steps)), 
+                     Median=sprintf("%1.3f", median(bydate$steps)))
 
 plot <- ggplot(data=bydate, aes(bydate$steps))
 plot1 <- plot + geom_histogram(stat="bin", binwidth=max(bydate$steps)/15,color="dark green", fill="white")
 plot1 <- plot1 + 
   labs(title="Total number of steps taken per day", x="Total steps per day", y="Frequency") + 
   geom_vline(xintercept=mean(bydate$steps), color="blue", lty=2) + 
-  geom_vline(xintercept=median(bydate$steps),color="red", lty=5) + 
-  annotation_custom(tableGrob(means), xmin=mean(bydate$steps)*1.5)
-
-plot1
+  geom_vline(xintercept=median(bydate$steps),color="red", lty=5) 
+grid.arrange(plot1, tableGrob(table1), nrow=2, heights=c(1,0.1))
 ```
 
-![Distribution of total daily steps](figure/plot1-1.png) 
+![Distribution of total daily steps](PA1_template_files/figure-html/plot1-1.png) 
 
 ##What is the average daily activity pattern?
 The dataframe byint contains the average steps at each 5-min interval. Each interval is averaged across all days reported in the data (currently with NAs removed). We can use that dataframe to make a line plot and annotate the plot with the maximum average steps taken and the 5-minute interval in which it happened. 
@@ -105,45 +102,46 @@ The dataframe byint contains the average steps at each 5-min interval. Each inte
 ```r
 #calculate maximum avg. steps and its matching interval
 maxint<-byint$interval[which.max(byint$steps)]
-maxstep<-max(byint$steps)
-maxes <- data.frame(MaxInterval=maxint, MaxSteps=round(maxstep))
+maxstep<-max(byint_plot$steps)
+table2 <- data.frame(Most_Active_Interval=maxint, Steps=round(maxstep))
 
-plot2 <- ggplot(data=byint, aes(x=interval, y=steps))
+plot2 <- ggplot(data=byint_plot, aes(x=timeint, y=steps))
 plot2 <- plot2 + geom_line(color="red") +
-  labs(title="Average Daily Activity\n in 5-minute intervals",
-     x="Interval",
-     y="Average Steps Taken") +
-  geom_vline(xintercept=maxint, color="dark blue") +
-  annotation_custom(tableGrob(maxes), xmin=maxint, ymin=maxstep*0.75)
-
-plot2
+  labs(title="Average Daily Activity in 5-minute intervals",
+     x="Time of Day (HH:MM)",
+     y="Average Steps Taken") + 
+  scale_x_datetime(labels=date_format("%H:%M"))
+grid.arrange(plot2, tableGrob(table2), nrow=2, heights=c(1,0.1))
 ```
 
-![Daily Activity Pattern](figure/plot2-1.png) 
+![Daily Activity Pattern](PA1_template_files/figure-html/plot2-1.png) 
 
 
 ##Imputing missing values
 The original dataset had missing values, signified by "NA", which we initially ignored. 
-The original data is stored in the dataframe `activity`, while the dataframe `act_clean` is the subset with NA removed. The `anti_join` function of the `dplyr` package can compare two datasets: [it returns all values in x that are not matched in y, and only keeps columns from x.](https://stat545-ubc.github.io/bit001_dplyr-cheatsheet.html). This will tell us which entries corresponded to the NA values. 
+The antijoin function of the dplyr package can compare two datasets: [it returns all values in x that are not matched in y, and only keeps columns from x.](https://stat545-ubc.github.io/bit001_dplyr-cheatsheet.html). This will tell us which entries corresponded to the NA values. 
 
 
 ```r
 #return na rows with anti_join
-join <- anti_join(activity, act_clean)
+bydate_missing <- anti_join(activity, act_clean, by="steps")
+days <-distinct(bydate_missing, Missing=as.Date(bydate_missing$date))
+#Information on missing Dates
+days$Missing
 ```
 
 ```
-## Joining by: c("steps", "date", "interval")
+## [1] "2012-10-01" "2012-10-08" "2012-11-01" "2012-11-04" "2012-11-09"
+## [6] "2012-11-10" "2012-11-14" "2012-11-30"
 ```
 
 ```r
-ans<-distinct(join, as.Date(join$date))
-data.frame(Total=nrow(activity), Complete=nrow(act_clean), MissingRows=nrow(join))
+data.frame(TotalObs=nrow(activity), CompleteObs=nrow(act_clean), MissingObs=nrow(bydate_missing))
 ```
 
 ```
-##   Total Complete MissingRows
-## 1 17568    15264        2304
+##   TotalObs CompleteObs MissingObs
+## 1    17568       15264       2304
 ```
 
 There are 2304 missing rows to impute out of a total 17568, representing time intervals missing data. 
@@ -186,22 +184,23 @@ The original dataset had data missing mostly from 8 sporadic days out of the 61 
 bydate2 <- act2 %>% 
         group_by(date) %>%
         summarize(steps=sum(steps)) 
-means <- data.frame(NewMean=signif(mean(bydate2$steps), digits=7), NewMedian=signif(median(bydate2$steps), digits=7))
+tableN <- data.frame(NewMean=sprintf("%1.3f",mean(bydate2$steps)), NewMedian=sprintf("%1.3f",median(bydate2$steps)))
+table3<-cbind(table1, tableN)
+                    
 plot3 <- ggplot(data=bydate2, aes(steps))
 plot3 <- plot3 + geom_histogram(stat="bin", binwidth=max(bydate2$steps)/15,color="dark green", fill="white") + ylim(0,22)
 plot3 <- plot3 + 
   labs(title="Total number of steps taken per day (Imputed Data)", x="Total steps per day", y="Frequency") + 
   geom_vline(xintercept=mean(bydate2$steps), color="blue", lty=2) + 
-  geom_vline(xintercept=median(bydate2$steps),color="red", lty=5) + 
-  annotation_custom(tableGrob(means),  xmin=mean(bydate$steps)*1.5)
-#place new histogram next to original histogram
+  geom_vline(xintercept=median(bydate2$steps),color="red", lty=5) 
+#place new histogram next to original histogram, and with same y-axis scale
 plot1 <- plot1 + ylim(0,22)
-grid.arrange(plot3, plot1, nrow=2)
+grid.arrange(plot3, plot1, tableGrob(table3), nrow=3, heights=c(1,1,0.25))
 ```
 
-![Before and After Imputing Missing Data](figure/plot3-1.png) 
+![Before and After Imputing Missing Data](PA1_template_files/figure-html/plot3-1.png) 
 
-We can confirm that the mean and median have not changed much in the imputed data. The mean stayed the same at 1.0766 &times; 10<sup>4</sup> but the median changed slightly from 10765 to 1.076619 &times; 10<sup>4</sup>.
+We can confirm that the mean and median have not changed much in the imputed data. After imputation, the mean and median are closer to each other. We expected that the mean should not change since the average daily pattern was used to impute. The histogram shows that the main effect was to increase the number of counts in the bin that contains the mean and median. 
 
 ##Are there differences in activity patterns between weekdays and weekends?
 
@@ -224,17 +223,20 @@ act3 <- rbind(wkday, wkend)
 act4 <- act3 %>%
         group_by(interval, dow2) %>%
         summarize(steps=mean(steps))
-plot4 <- ggplot(data=act4, aes(x=interval, y=steps)) + 
+act4plot<-act4
+act4plot$timeint<-parse_date_time(paste("2012-10-01",sprintf("%04d",act4$interval)), "Y!m*!d!H!M!")
+plot4 <- ggplot(data=act4plot, aes(x=timeint, y=steps)) + 
   geom_line(color="dark green", type="l", aes(group=dow2)) + 
   facet_grid(dow2~., scales="free", space="free")
 plot4 <- plot4 + 
-  labs(x="Interval", 
+  labs(x="Time of Day (HH:MM)", 
        y="Mean Steps", 
-       title="Mean Steps by 5-min Interval\n Weekend vs. Weekdays") 
-print(plot4)
+       title="Mean Steps by 5-min Interval: Weekend vs. Weekdays") +
+  scale_x_datetime(labels=date_format("%H:%M"))
+plot4
 ```
 
-![Daily activity on Weekdays vs. Weekends](figure/plot4-1.png) 
+![Daily activity on Weekdays vs. Weekends](PA1_template_files/figure-html/plot4-1.png) 
 
 From this plot, we see that on weekends, there are more intervals where the number of steps is >100. On weekdays, there is a peak of activity in the mornings, around 8-9AM. So the overall activity on weekends seems to be higher but the weekdays have the biggest 5-min peak, at 8:30. This pattern fits with a person who takes a walk every weekday morning, or walks to work. This person's weekends are fairly active, and they seem to spend a greater part of the weekend days moving around. 
 
