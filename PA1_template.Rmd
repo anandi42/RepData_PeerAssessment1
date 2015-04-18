@@ -156,7 +156,7 @@ We can confirm that the mean and median have not changed much in the imputed dat
 
 ##Are there differences in activity patterns between weekdays and weekends?
 
-```{r plot4, dependson=c(2,3,6), fig.cap="Daily activity on Weekdays vs. Weekends", fig.width=8}
+```{r plot4, dependson=c(2,3,6), fig.cap="Daily activity on Weekdays vs. Weekends", fig.height=8}
 #change date format in dataset
 act2$date <- as.Date(strptime(act2$date, format="%Y-%m-%d"))
 #create a "day of week" variable
@@ -197,7 +197,7 @@ From this plot, we see that on weekends, there are more intervals where the numb
 ##Appendix: Additional plots which may be of interest
 Here's two additional plots that I also made while playing around with this data. In the first one, I plotted the daily steps against the date, and made a very crude attempt at finding a trend in the data. The second plot is just an "expanded" version of the weekend vs. weekday plot.  
 
-```{r extra, dependson=c(2,3,6,7,8), fig.cap="Additional plots", fig.width=8}
+```{r extra, dependson=c(2,3,6,7,8), fig.cap="Additional plots", fig.width=10, fig.height=8}
 act5 <- act3 %>%
   group_by(date,dow) %>%
   summarize(steps=sum(steps))
