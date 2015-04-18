@@ -1,4 +1,12 @@
-# Reproducible Research Peer Assesment 1
+---
+title: "Reproducible Research Peer Assesment 1"
+output:
+  html_document:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 6
+    keep_md: yes
+---
 
 ##Introduction
   Personal activity monitoring devices allow individuals to collect a large amount of data about their activities. These devices iclude "[fitness bands](https://www.google.com/search?q=fitness+bands)" like Fitbit ad Jawbone. Smartphone apps that use the phone's own motion processor or sensors provide [a cheaper but possibly less accurate alterative](http://www.wired.com/2014/01/smartphone-fitness-tracker/). Regardless of the device used, many individuals are collecting data about their daily activity as part of a growing ["Quantified Self"](http://en.wikipedia.org/wiki/Quantified_Self) movement. Often, the fitness device comes with software for basic analyses.  
@@ -27,7 +35,8 @@ opts_chunk$set(cache=TRUE, echo=TRUE)
 * interval: Identifier for the 5-minute interval in which measurement was taken.
 +This interval is given as a numeric value from 0 to 2355, representing five-minute segments (i.e 830=8:30 AM, while 2200=10 PM).  
 
-We first create summary datasets of the total steps per day, and the daily activity patter. The two generated dataframes are: 
+We first create summary datasets of the total steps per day, and the daily activity pattern. The two generated dataframes are:  
+
   * bydate: Summed steps by day
   * byint: average steps at each 5-min interval, averaged over all days 
     + An additional formatting step to create a "variable for the time interval
@@ -95,7 +104,7 @@ plot1 <- plot1 +
 grid.arrange(plot1, tableGrob(table1), nrow=2, heights=c(1,0.1))
 ```
 
-![Distribution of total daily steps](PA1_template_files/figure-html/plot1-1.png) 
+![Distribution of total daily steps](figure/plot1-1.png) 
 
 ##What is the average daily activity pattern?
 The dataframe byint contains the average steps at each 5-min interval. Each interval is averaged across all days reported in the data (currently with NAs removed). In the next figure, we plot the average steps against the time interval. The table reports the maximum steps and the associated interval. 
@@ -119,7 +128,7 @@ plot2 <- plot2 + geom_line(color="red") +
 grid.arrange(plot2, tableGrob(table2), nrow=2, heights=c(1,0.1))
 ```
 
-![Daily Activity Pattern](PA1_template_files/figure-html/plot2-1.png) 
+![Daily Activity Pattern](figure/plot2-1.png) 
 
 
 ##Imputing missing values
@@ -190,7 +199,7 @@ plot1 <- plot1 + ylim(0,22)
 grid.arrange(plot3, plot1, tableGrob(table3), nrow=3, heights=c(1,1,0.25))
 ```
 
-![Before and After Imputing Missing Data](PA1_template_files/figure-html/plot3-1.png) 
+![Before and After Imputing Missing Data](figure/plot3-1.png) 
 
 
 We can confirm that the mean and median have not changed much in the imputed data. After imputation, the mean and median are closer to each other. We can observe from the histogram that the main effect was to increase the number of counts in the bin that contains the mean and median. 
@@ -231,7 +240,7 @@ plot4 <- plot4 +
 plot4
 ```
 
-![Daily activity on Weekdays vs. Weekends](PA1_template_files/figure-html/plot4-1.png) 
+![Daily activity on Weekdays vs. Weekends](figure/plot4-1.png) 
 
 From this plot, we see that on weekends, there are more intervals where the number of steps is >100, which implies that the weekends contain more sustained activity over the day than weekdays. On weekdays, there is a peak of activity in the mornings, around 8-9AM. This pattern fits with a person who takes a walk every weekday morning, or walks to work, and then engages in a lot of activit over the weekend.
 
@@ -271,5 +280,5 @@ plotY <- plotY +
 grid.arrange(plotX,plotY, ncol=2)
 ```
 
-![Additional plots](PA1_template_files/figure-html/extra-1.png) 
+![Additional plots](figure/extra-1.png) 
 
