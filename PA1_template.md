@@ -45,15 +45,8 @@ We first create summary datasets of the total steps per day, and the daily activ
 ```r
 fileurl="http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 filename <- "activity.zip"
-if (file.exists(filename)) {
-    } else {download.file(fileurl, destfile="activity.zip")}
-```
-
-```
-## NULL
-```
-
-```r
+if (!file.exists(filename)) {
+    download.file(fileurl, destfile="activity.zip")} 
 #This is the main data
 activity <- read.csv(unz("activity.zip","activity.csv"))
 head(activity) 
@@ -260,7 +253,8 @@ plotX <- ggplot(act5, aes(x=ymd(date),y=steps)) +
   geom_hline(yintercept=mean(act5$steps), color="red", lty=1, lwd=2, alpha=0.5) +
   stat_smooth(method="loess")
 plotX <- plotX + labs(title="Total Daily Steps\n From Oct 1 to Dec 1, 2012", 
-                      x="Date", y="Total Daily Steps") 
+                      x="Date", y="Total Daily Steps") +
+  theme_bw()
 
 act6 <- act3 %>%
         group_by(interval, dow) %>%
@@ -277,7 +271,7 @@ plotY <- plotY +
   scale_x_datetime(breaks=date_breaks("8 hours"), minor_breaks=date_breaks("1 hour"),
                    labels=date_format("%I:%M%p")) +
   theme_bw()
-grid.arrange(plotX,plotY, ncol=2)
+grid.arrange(plotX, plotY, ncol=2)
 ```
 
 ![Additional plots](figure/extra-1.png) 
