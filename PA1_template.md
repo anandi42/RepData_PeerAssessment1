@@ -6,7 +6,7 @@ output:
     keep_md: yes
 ---
 
-##Introduction##  
+##Introduction  
 
   Personal activity monitoring devices allow individuals to collect a large amount of data about their activities. These devices iclude "[fitness bands](https://www.google.com/search?q=fitness+bands)" like Fitbit ad Jawbone. Smartphone apps that use the phone's own motion processor or sensors provide [a cheaper but possibly less accurate alterative](http://www.wired.com/2014/01/smartphone-fitness-tracker/). Regardless of the device used, many individuals are collecting data about their daily activity as part of a growing ["Quantified Self"](http://en.wikipedia.org/wiki/Quantified_Self) movement. Often, the fitness device comes with software for basic analyses.  
   This report provides methods for processing and analyzing such fitness data, and may be beneficial as an example for people who find these pre-packagd analyses limited or wish to connect their data to their own personal applications. The data used in this report was obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).
@@ -26,7 +26,7 @@ opts_chunk$set(cache=TRUE, echo=TRUE)
 ```
 
 
-##Load and Process Data##  
+##Load and Process Data  
 
   The data consists the following variables:  
 
@@ -78,7 +78,7 @@ byint_plot <- byint
 byint_plot$timeint<-as.POSIXct(sprintf("%04d",byint_plot$interval), tz="UTC", format="%H%M")
 ```
 
-##What is mean total number of steps taken per day?##  
+##What is mean total number of steps taken per day?  
   To answer the question, we plot a histogram of bydate, which contains the summed steps taken for every day of the dataset. Using the  pacakge [gridExtra](http://cran.r-project.org/web/packages/gridExtra/gridExtra.pdf), we can annotate the plot with the calculated mean and median. 
 
 
@@ -99,7 +99,7 @@ grid.arrange(plot1, tableGrob(table1), nrow=2, heights=c(1,0.1))
 
 ![Distribution of total daily steps](figure/plot1-1.png) 
 
-##What is the average daily activity pattern?##
+##What is the average daily activity pattern?
 
   The dataframe byint contains the average steps at each 5-min interval. Each interval is averaged across all days reported in the data (currently with NAs removed). In the next figure, we plot the average steps against the time interval. The table reports the maximum steps and the associated interval. 
 
@@ -125,7 +125,7 @@ grid.arrange(plot2, tableGrob(table2), nrow=2, heights=c(1,0.1))
 ![Daily Activity Pattern](figure/plot2-1.png) 
 
 
-##Imputing missing values##  
+##Imputing missing values  
 
   The original dataset had missing values, signified by "NA", which we initially ignored. The dplyr package can compare two datasets using the join function. We spefically use the anti-join: [it returns all values in x that are not matched in y, and only keeps columns from x.](https://stat545-ubc.github.io/bit001_dplyr-cheatsheet.html). The joined dataset will only contain NA entries, so that we can see which dates contain missing data. Also, the row count can be compared against the original dataset. 
 
@@ -198,7 +198,7 @@ grid.arrange(plot3, plot1, tableGrob(table3), nrow=3, heights=c(1,1,0.25))
 
   We can confirm that the mean and median have not changed much in the imputed data. After imputation, the mean and median are closer to each other. We can observe from the histogram that the main effect was to increase the number of counts in the bin that contains the mean and median. 
 
-##Are there differences in activity patterns between weekdays and weekends?##
+##Are there differences in activity patterns between weekdays and weekends?
 
 
 ```r
@@ -239,10 +239,10 @@ plot4
 
   From this plot, we see that on weekends, there are more intervals where the number of steps is >100, which implies that the weekends contain more sustained activity over the day than weekdays. On weekdays, there is a peak of activity in the mornings, around 8-9AM. This pattern fits with a person who takes a walk every weekday morning, or walks to work, and then engages in a lot of activit over the weekend.
 
-##Conclusions##  
+##Conclusions  
   Using a downloaded .csv file of activity data as the input we can use R, Markdown and Knitr to create a customized analysis output from any giving dataset, which we can then use for several applications. For example, one can generate reports of activity levels as a way to track oneself to a healthier lifestyle. 
   
-##Appendix: Additional plots which may be of interest##  
+##Appendix: Additional plots which may be of interest  
   Here's two additional plots that I also made while playing around with this data. In the first one, I plotted the daily steps against the date, and made a very crude attempt at finding a trend in the data. The second plot is just an "expanded" version of the weekend vs. weekday plot.  
 
 
