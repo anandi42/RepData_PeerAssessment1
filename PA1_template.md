@@ -271,7 +271,7 @@ plotY <- plotY +
   scale_x_datetime(breaks=date_breaks("8 hours"), minor_breaks=date_breaks("1 hour"),
                    labels=date_format("%I:%M%p")) +
   theme_bw()
-grid.arrange(plotX, plotY, ncol=2)
+grid.arrange(plotX, plotY, nrow=2)
 ```
 
 ![Additional plots](figure/extra-1.png) 
