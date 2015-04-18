@@ -3,8 +3,6 @@ title: "Reproducible Research Peer Assesment 1"
 output:
   html_document:
     fig_caption: yes
-    fig_height: 6
-    fig_width: 6
     keep_md: yes
 ---
 

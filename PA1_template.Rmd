@@ -3,8 +3,6 @@ title: "Reproducible Research Peer Assesment 1"
 output:
   html_document:
     fig_caption: yes
-    fig_height: 6
-    fig_width: 6
     keep_md: yes
 ---
 
@@ -132,7 +130,7 @@ sum(is.na(act2)) #check that there's no more NAs
 **How did imputing data affect the mean and median?**
 Since we used a mean value to replace missing data, we expect that the overall mean should not be changed much. To test this, we repeat the same process we applied to the original dataset to get a histogram with calculated mean and median. 
 
-```{r plot3, dependson=c("setup", "plot1", "imputing"), fig.cap="Before and After Imputing Missing Data"}
+```{r plot3, dependson=c("setup", "plot1", "imputing"), fig.cap="Before and After Imputing Missing Data", fig.height=8, fig.width=8}
 bydate2 <- act2 %>% 
         group_by(date) %>%
         summarize(steps=sum(steps)) 
@@ -156,7 +154,7 @@ We can confirm that the mean and median have not changed much in the imputed dat
 
 ##Are there differences in activity patterns between weekdays and weekends?
 
-```{r plot4, dependson=c(2,3,6), fig.cap="Daily activity on Weekdays vs. Weekends", fig.height=8}
+```{r plot4, dependson=c(2,3,6), fig.cap="Daily activity on Weekdays vs. Weekends"}
 #change date format in dataset
 act2$date <- as.Date(strptime(act2$date, format="%Y-%m-%d"))
 #create a "day of week" variable
@@ -197,7 +195,7 @@ From this plot, we see that on weekends, there are more intervals where the numb
 ##Appendix: Additional plots which may be of interest
 Here's two additional plots that I also made while playing around with this data. In the first one, I plotted the daily steps against the date, and made a very crude attempt at finding a trend in the data. The second plot is just an "expanded" version of the weekend vs. weekday plot.  
 
-```{r extra, dependson=c(2,3,6,7,8), fig.cap="Additional plots", fig.width=10, fig.height=8}
+```{r extra, dependson=c(2,3,6,7,8), fig.cap="Additional plots", fig.height=8, fig.width=8}
 act5 <- act3 %>%
   group_by(date,dow) %>%
   summarize(steps=sum(steps))
