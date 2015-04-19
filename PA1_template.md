@@ -8,7 +8,7 @@ output:
 
 ##Introduction  
 
-  Personal activity monitoring devices allow individuals to collect a large amount of data about their activities. These devices iclude "[fitness bands](https://www.google.com/search?q=fitness+bands)" like Fitbit ad Jawbone. Smartphone apps that use the phone's own motion processor or sensors provide [a cheaper but possibly less accurate alterative](http://www.wired.com/2014/01/smartphone-fitness-tracker/). Regardless of the device used, many individuals are collecting data about their daily activity as part of a growing ["Quantified Self"](http://en.wikipedia.org/wiki/Quantified_Self) movement. Often, the fitness device comes with software for basic analyses.  
+  Personal activity monitoring devices, like "[fitness bands](https://www.google.com/search?q=fitness+bands)" allow users to collect a large amount of data about their own physical activity, using measures like number of steps. Often, the fitness device comes with software for basic analyses.  
   This report provides methods for processing and analyzing such fitness data, and may be beneficial as an example for people who find these pre-packagd analyses limited or wish to connect their data to their own personal applications. The data used in this report was obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).
 
 Setup steps and packages used:
@@ -33,13 +33,9 @@ opts_chunk$set(cache=TRUE, echo=TRUE)
 * Steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)  
 * date: The date on which the measurement was taken in YYYY-MM-DD format.
 * interval: Identifier for the 5-minute interval in which measurement was taken.
-+This interval is given as a numeric value from 0 to 2355, representing five-minute segments (i.e 830=8:30 AM, while 2200=10 PM).  
+  + This interval is given as a numeric value from 0 to 2355, representing five-minute segments (i.e 830=8:30 AM, while 2200=10 PM).  
 
-  We first create summary datasets of the total steps per day, and the daily activity pattern. The two generated dataframes are:  
-
-  * bydate: Summed steps by day
-  * byint: average steps at each 5-min interval, averaged over all days 
-    + An additional formatting step to create a "variable for the time interval
+  We first create summary datasets of the total steps per day, and the daily activity pattern: `bydate`, which is the summed steps by day and `byint`, which contains the average steps at each 5-min interval, averaged over all days. Additionally, a formatted datetime variable is created. 
 
 
 ```r
@@ -69,57 +65,56 @@ act_clean <- activity[!is.na(activity$steps),]
 bydate <- act_clean %>%
           group_by(date) %>%
           summarize(steps=sum(steps)) 
-      
 byint <- act_clean %>%
           group_by(interval) %>%
           summarize(steps=mean(steps))
-#creating a as.POSIXct interval datetime variable 
+#creating an interval datetime variable 
 byint_plot <- byint 
 byint_plot$timeint<-as.POSIXct(sprintf("%04d",byint_plot$interval), tz="UTC", format="%H%M")
 ```
 
 ##What is mean total number of steps taken per day?  
-  To answer the question, we plot a histogram of bydate, which contains the summed steps taken for every day of the dataset. Using the  pacakge [gridExtra](http://cran.r-project.org/web/packages/gridExtra/gridExtra.pdf), we can annotate the plot with the calculated mean and median. 
+  We make a histogram of `bydate`, and a summary table of mean and median (to at least 2 decimal places) using [gridExtra](http://cran.r-project.org/web/packages/gridExtra/gridExtra.pdf).
 
 
 ```r
-table1 <- data.frame(Mean=sprintf("%1.3f",mean(bydate$steps)), 
-                     Median=sprintf("%1.3f", median(bydate$steps)))
-
+#calculate mean and median and put in a table
+values <- c(mean(bydate$steps), median(bydate$steps))
+table1 <- data.frame(values, row.names=c("Mean", "Median")) 
+#plot
 plot <- ggplot(data=bydate, aes(bydate$steps))
-plot1 <- plot + geom_histogram(stat="bin", binwidth=max(bydate$steps)/15,color="black", fill="white")
+plot1 <- plot + geom_histogram(stat="bin", binwidth=max(bydate$steps)/15, color="black", fill="light green")
 plot1 <- plot1 + 
   labs(title="Total number of steps taken per day", x="Total steps per day", y="Frequency") + 
   geom_vline(xintercept=mean(bydate$steps), color="blue", lty=2) + 
   geom_vline(xintercept=median(bydate$steps),color="red", lty=5) +
   theme_bw()
-
-grid.arrange(plot1, tableGrob(table1), nrow=2, heights=c(1,0.1))
+#layout of plot and table
+grid.arrange(plot1, tableGrob(format(table1, nsmall=2), show.colnames = FALSE), nrow=2, heights=c(1,0.25))
 ```
 
 ![Distribution of total daily steps](figure/plot1-1.png) 
 
 ##What is the average daily activity pattern?
 
-  The dataframe byint contains the average steps at each 5-min interval. Each interval is averaged across all days reported in the data (currently with NAs removed). In the next figure, we plot the average steps against the time interval. The table reports the maximum steps and the associated interval. 
+  The dataframe `byint` contains the average steps at each 5-min interval. Each interval is averaged across all days reported in the data (currently with NAs removed). In the next figure, we plot the average steps against the time interval. The table reports the maximum steps and the associated interval (rounded). 
 
 
 ```r
 #calculate maximum avg. steps and its matching interval
-maxint<-byint$interval[which.max(byint$steps)]
-maxstep<-max(byint_plot$steps)
-table2 <- data.frame(Most_Active_Interval=maxint, Steps=round(maxstep))
-
+values <- rbind(byint$interval[which.max(byint$steps)], max(byint_plot$steps))
+table2 <- data.frame(values, row.names=c("Max Interval", "Steps"))
+#plot
 plot2 <- ggplot(data=byint_plot, aes(x=timeint, y=steps))
-plot2 <- plot2 + geom_line(color="red") +
+plot2 <- plot2 + geom_line(color="black") +
   labs(title="Average Daily Activity in 5-minute intervals",
-     x="Time of Day (HH:MM)",
+     x="Time of Day",
      y="Average Steps Taken") + 
   scale_x_datetime(breaks=date_breaks("5 hours"), minor_breaks=date_breaks("30 min"),
                    labels=date_format("%I:%M%p")) +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 45, hjust=1))
-grid.arrange(plot2, tableGrob(table2), nrow=2, heights=c(1,0.1))
+  theme_bw() 
+#layout of plot and table
+grid.arrange(plot2, tableGrob(round(table2), show.colnames=FALSE), nrow=2, heights=c(1,0.1))
 ```
 
 ![Daily Activity Pattern](figure/plot2-1.png) 
@@ -133,8 +128,8 @@ grid.arrange(plot2, tableGrob(table2), nrow=2, heights=c(1,0.1))
 
 ```r
 #return na rows with anti_join
-bydate_missing <- anti_join(activity, act_clean, by="steps")
-days <-distinct(bydate_missing, Missing=as.Date(bydate_missing$date))
+missing <- anti_join(activity, act_clean, by="steps")
+days <-distinct(missing, Missing=as.Date(missing$date))
 #Information on missing Dates
 days$Missing
 ```
@@ -145,7 +140,7 @@ days$Missing
 ```
 
 ```r
-data.frame(TotalObs=nrow(activity), CompleteObs=nrow(act_clean), MissingObs=nrow(bydate_missing))
+data.frame(TotalObs=nrow(activity), CompleteObs=nrow(act_clean), MissingObs=nrow(missing))
 ```
 
 ```
@@ -153,17 +148,14 @@ data.frame(TotalObs=nrow(activity), CompleteObs=nrow(act_clean), MissingObs=nrow
 ## 1    17568       15264       2304
 ```
 
-  There are 2304 missing rows to impute out of a total 17568, and these missing rows are associated with 8 days out of the 2-month dataset. 
-  To fill in these missing time intervals, we can use the average values from each 5-minute interval that was calculated earlier and stored in byint. Essentially, we will assume that on the 8 missing days, our anonymous "Quantified Self"-er had the daily activity pattern shown in the second figure. 
-
+  There are 2304 missing rows to impute out of a total 17568, and these missing rows are associated with 8 days out of the 2-month dataset. We replace all the values of `steps` in `missing` with the corresponding mean value from `byint`. If we had a much larger dataset this solution may need to be changed fro something faster. 
+    
 
 ```r
-act2<-activity
-for (i in 1:nrow(act2)) {
-    if (is.na(act2$steps[i])) {
-        act2$steps[i] <- byint[which(act2$interval[i] == byint$interval), ]$steps
-    }
-}
+for (i in 1:nrow(missing)) {
+  missing$steps[i] = byint[which(missing$interval[i] == byint$interval), ]$steps
+            }
+act2 <- rbind(act_clean, missing)
 sum(is.na(act2)) #check that there's no more NAs
 ```
 
@@ -172,29 +164,50 @@ sum(is.na(act2)) #check that there's no more NAs
 ```
 
 **How did imputing data affect the mean and median?**  
-  Since we used a mean value to replace missing data, we expect that the overall mean should not be changed much. To test this, we repeat the same process we applied to the original dataset to get a histogram with calculated mean and median. 
+  Since we used a mean value to replace missing data, we expect that the overall mean should not be changed much. We can test this by looking at the histogram and the calculated mean and median.
 
 
 ```r
+#aggregate new, imputed data
 bydate2 <- act2 %>% 
         group_by(date) %>%
         summarize(steps=sum(steps)) 
-tableN <- data.frame(NewMean=sprintf("%1.3f",mean(bydate2$steps)), NewMedian=sprintf("%1.3f",median(bydate2$steps)))
-table3<-cbind(table1, tableN)
-                    
-plot3 <- ggplot(data=bydate2, aes(steps))
-plot3 <- plot3 + geom_histogram(stat="bin", binwidth=max(bydate2$steps)/15,color="dark green", fill="white") + ylim(0,22)
-plot3 <- plot3 + 
-  labs(title="Total number of steps taken per day (Imputed Data)", x="Total steps per day", y="Frequency") + 
-  geom_vline(xintercept=mean(bydate2$steps), color="blue", lty=2) + 
-  geom_vline(xintercept=median(bydate2$steps),color="red", lty=5) +
-  theme_bw()
-#place new histogram next to original histogram, and with same y-axis scale
-plot1 <- plot1 + ylim(0,22)
-grid.arrange(plot3, plot1, tableGrob(table3), nrow=3, heights=c(1,1,0.25))
+#create summary table
+values <- rbind(mean(bydate2$steps),median(bydate2$steps))
+tableN <- data.frame(values, row.names=c("New Mean", "New Median"))
+table3 <- rbind(table1, tableN)
+#plot
+plot3 <- ggplot(data=bydate3, aes(x=steps))
 ```
 
-![Before and After Imputing Missing Data](figure/plot3-1.png) 
+```
+## Error in ggplot(data = bydate3, aes(x = steps)): object 'bydate3' not found
+```
+
+```r
+plot3 <- plot3 + geom_histogram(stat="bin", binwidth=max(bydate2$steps)/15,color="dark green", fill="grey") + facet_wrap(~ Dataset) 
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'plot3' not found
+```
+
+```r
+plot3 <- plot3 + labs(title="Total number of steps taken per day", x="Total steps per day", y="Frequency") + geom_vline(xintercept=mean(bydate2$steps), color="blue", lty=2) + geom_vline(xintercept=median(bydate2$steps),color="red", lty=5) + theme_bw()
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'plot3' not found
+```
+
+```r
+#Plot and Table Layout
+grid.arrange(plot3, tableGrob(format(table3,nsmall=2), show.colnames=FALSE), nrow=2, heights=c(1,0.25))
+```
+
+```
+## Error in arrangeGrob(..., as.table = as.table, clip = clip, main = main, : object 'plot3' not found
+```
 
   We can confirm that the mean and median have not changed much in the imputed data. After imputation, the mean and median are closer to each other. We can observe from the histogram that the main effect was to increase the number of counts in the bin that contains the mean and median. 
 
@@ -237,27 +250,31 @@ plot4
 ![Daily activity on Weekdays vs. Weekends](figure/plot4-1.png) 
 
 
-  From this plot, we see that on weekends, there are more intervals where the number of steps is >100, which implies that the weekends contain more sustained activity over the day than weekdays. On weekdays, there is a peak of activity in the mornings, around 8-9AM. This pattern fits with a person who takes a walk every weekday morning, or walks to work, and then engages in a lot of activit over the weekend.
+  From this plot, we see that on weekends, there are more intervals where the number of steps is >100, which implies that the weekends contain more sustained activity over the day than weekdays. On weekdays, there is a peak of activity in the mornings, around 8-9AM. This pattern fits with a person who takes a walk every weekday morning, or walks to work, and then engages in a lot of activity over the weekend.
 
 ##Conclusions  
   Using a downloaded .csv file of activity data as the input we can use R, Markdown and Knitr to create a customized analysis output from any giving dataset, which we can then use for several applications. For example, one can generate reports of activity levels as a way to track oneself to a healthier lifestyle. 
   
-##Appendix: Additional plots which may be of interest  
+  
+###Appendix: Additional plots which may be of interest  
   Here's two additional plots that I also made while playing around with this data. In the first one, I plotted the daily steps against the date, and made a very crude attempt at finding a trend in the data. The second plot is just an "expanded" version of the weekend vs. weekday plot.  
 
 
 ```r
+#aggregate summed steps by day
 act5 <- act3 %>%
-  group_by(date,dow) %>%
+  group_by(date) %>%
   summarize(steps=sum(steps))
+#plot
 plotX <- ggplot(act5, aes(x=ymd(date),y=steps)) + 
   geom_point(size=3) + 
-  geom_hline(yintercept=mean(act5$steps), color="red", lty=1, lwd=2, alpha=0.5) +
-  stat_smooth(method="loess")
+  geom_hline(yintercept=mean(act5$steps), color="red", lty=1, lwd=2, alpha=0.5) 
 plotX <- plotX + labs(title="Total Daily Steps\n From Oct 1 to Dec 1, 2012", 
                       x="Date", y="Total Daily Steps") +
-  theme_bw()
+  theme_bw() +
+  geom_smooth(method="auto")
 
+#aggregate by interval and day
 act6 <- act3 %>%
         group_by(interval, dow) %>%
         summarize(steps=mean(steps))
@@ -274,6 +291,10 @@ plotY <- plotY +
                    labels=date_format("%I:%M%p")) +
   theme_bw()
 grid.arrange(plotX, plotY, nrow=2)
+```
+
+```
+## geom_smooth: method="auto" and size of largest group is <1000, so using loess. Use 'method = x' to change the smoothing method.
 ```
 
 ![Additional plots](figure/extra-1.png) 
