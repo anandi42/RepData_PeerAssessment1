@@ -8,8 +8,8 @@ output:
 
 ##Introduction  
 
-  Personal activity monitoring devices, like "[fitness bands](https://www.google.com/search?q=fitness+bands)" allow users to collect a large amount of data about their own physical activity, using measures like number of steps. Often, the fitness device comes with software for basic analyses.  
-  This report provides methods for processing and analyzing such fitness data, and may be beneficial as an example for people who find these pre-packagd analyses limited or wish to connect their data to their own personal applications. The data used in this report was obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).
+  Personal activity monitoring devices, like "[fitness bands](https://www.google.com/search?q=fitness+bands)" allow users to collect a large amount of data about their own physical activity, using measures like number of steps. Sometimes, the fitness device comes with software for basic analyses.  
+  This report provides methods for processing and analyzing such fitness data, and may be beneficial as an example for people who find the commercial pre-packagd analyses limited or wish to connect their data to their own personal applications. The data used in this report was obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).
 
 Setup steps and packages used:
 
@@ -17,7 +17,7 @@ Setup steps and packages used:
 setwd("~/data")
 rm(list = ls())
 library(dplyr)
-library(ggplot2)
+library(ggplot2) 
 library(scales)
 library(gridExtra)
 library(lubridate)
@@ -122,8 +122,7 @@ grid.arrange(plot2, tableGrob(round(table2), show.colnames=FALSE), nrow=2, heigh
 
 ##Imputing missing values  
 
-  The original dataset had missing values, signified by "NA", which we initially ignored. The dplyr package can compare two datasets using the join function. We spefically use the anti-join: [it returns all values in x that are not matched in y, and only keeps columns from x.](https://stat545-ubc.github.io/bit001_dplyr-cheatsheet.html). The joined dataset will only contain NA entries, so that we can see which dates contain missing data. Also, the row count can be compared against the original dataset. 
-
+  The original dataset had missing values, signified by "NA", which we initially ignored. The dplyr package can compare two datasets using the join function. We spefically use `anti_join()`: [it returns all values in x that are not matched in y, and only keeps columns from x.](https://stat545-ubc.github.io/bit001_dplyr-cheatsheet.html). The joined dataset will only contain NA entries, so that we can see which dates contain missing data. Also, the row count can be compared against the original dataset. 
 
 
 ```r
@@ -148,7 +147,7 @@ data.frame(TotalObs=nrow(activity), CompleteObs=nrow(act_clean), MissingObs=nrow
 ## 1    17568       15264       2304
 ```
 
-  There are 2304 missing rows to impute out of a total 17568, and these missing rows are associated with 8 days out of the 2-month dataset. We replace all the values of `steps` in `missing` with the corresponding mean value from `byint`. If we had a much larger dataset this solution may need to be changed fro something faster. 
+  There are 2304 missing rows to impute out of a total 17568, and these missing rows are associated with 8 days out of the 2-month dataset. We replace all the values of `steps` in `missing` with the corresponding mean value from `byint`. If we had a much larger dataset this solution may need to be changed to something faster. 
     
 
 ```r
@@ -189,8 +188,6 @@ grid.arrange(plot3, tableGrob(format(table3,nsmall=2), show.colnames=FALSE), nro
 ```
 
 ![Before and After Imputing Missing Data](figure/plot3-1.png) 
-
-  We can confirm that the mean and median have not changed much in the imputed data. After imputation, the mean and median are closer to each other. We can observe from the histogram that the main effect was to increase the number of counts in the bin that contains the mean and median. 
 
 ##Are there differences in activity patterns between weekdays and weekends?
 
@@ -241,7 +238,7 @@ plot4
 
 
 ```r
-#aggregate data by day 
+#aggregate data by date and day of week
 act5 <- act3 %>%
   group_by(date,dow) %>%
   summarize(steps=sum(steps))
