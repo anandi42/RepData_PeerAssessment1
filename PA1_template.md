@@ -248,8 +248,233 @@ plotX <- ggplot(act5, aes(x=ymd(date),y=steps)) +
   geom_hline(yintercept=mean(act5$steps), color="red", lty=1, lwd=2, alpha=0.5) 
 plotX <- plotX + labs(title="Total Daily Steps\n From Oct 1 to Dec 1, 2012", 
                       x="Date", y="Total Daily Steps") +
+  geom_smooth(method="loess", alpha=0.5)
   theme_bw()
+```
 
+```
+## List of 40
+##  $ line                :List of 4
+##   ..$ colour  : chr "black"
+##   ..$ size    : num 0.5
+##   ..$ linetype: num 1
+##   ..$ lineend : chr "butt"
+##   ..- attr(*, "class")= chr [1:2] "element_line" "element"
+##  $ rect                :List of 4
+##   ..$ fill    : chr "white"
+##   ..$ colour  : chr "black"
+##   ..$ size    : num 0.5
+##   ..$ linetype: num 1
+##   ..- attr(*, "class")= chr [1:2] "element_rect" "element"
+##  $ text                :List of 8
+##   ..$ family    : chr ""
+##   ..$ face      : chr "plain"
+##   ..$ colour    : chr "black"
+##   ..$ size      : num 12
+##   ..$ hjust     : num 0.5
+##   ..$ vjust     : num 0.5
+##   ..$ angle     : num 0
+##   ..$ lineheight: num 0.9
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ axis.text           :List of 8
+##   ..$ family    : NULL
+##   ..$ face      : NULL
+##   ..$ colour    : NULL
+##   ..$ size      :Class 'rel'  num 0.8
+##   ..$ hjust     : NULL
+##   ..$ vjust     : NULL
+##   ..$ angle     : NULL
+##   ..$ lineheight: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ strip.text          :List of 8
+##   ..$ family    : NULL
+##   ..$ face      : NULL
+##   ..$ colour    : NULL
+##   ..$ size      :Class 'rel'  num 0.8
+##   ..$ hjust     : NULL
+##   ..$ vjust     : NULL
+##   ..$ angle     : NULL
+##   ..$ lineheight: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ axis.line           : list()
+##   ..- attr(*, "class")= chr [1:2] "element_blank" "element"
+##  $ axis.text.x         :List of 8
+##   ..$ family    : NULL
+##   ..$ face      : NULL
+##   ..$ colour    : NULL
+##   ..$ size      : NULL
+##   ..$ hjust     : NULL
+##   ..$ vjust     : num 1
+##   ..$ angle     : NULL
+##   ..$ lineheight: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ axis.text.y         :List of 8
+##   ..$ family    : NULL
+##   ..$ face      : NULL
+##   ..$ colour    : NULL
+##   ..$ size      : NULL
+##   ..$ hjust     : num 1
+##   ..$ vjust     : NULL
+##   ..$ angle     : NULL
+##   ..$ lineheight: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ axis.ticks          :List of 4
+##   ..$ colour  : chr "black"
+##   ..$ size    : NULL
+##   ..$ linetype: NULL
+##   ..$ lineend : NULL
+##   ..- attr(*, "class")= chr [1:2] "element_line" "element"
+##  $ axis.title.x        :List of 8
+##   ..$ family    : NULL
+##   ..$ face      : NULL
+##   ..$ colour    : NULL
+##   ..$ size      : NULL
+##   ..$ hjust     : NULL
+##   ..$ vjust     : NULL
+##   ..$ angle     : NULL
+##   ..$ lineheight: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ axis.title.y        :List of 8
+##   ..$ family    : NULL
+##   ..$ face      : NULL
+##   ..$ colour    : NULL
+##   ..$ size      : NULL
+##   ..$ hjust     : NULL
+##   ..$ vjust     : NULL
+##   ..$ angle     : num 90
+##   ..$ lineheight: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ axis.ticks.length   :Class 'unit'  atomic [1:1] 0.15
+##   .. ..- attr(*, "unit")= chr "cm"
+##   .. ..- attr(*, "valid.unit")= int 1
+##  $ axis.ticks.margin   :Class 'unit'  atomic [1:1] 0.1
+##   .. ..- attr(*, "unit")= chr "cm"
+##   .. ..- attr(*, "valid.unit")= int 1
+##  $ legend.background   :List of 4
+##   ..$ fill    : NULL
+##   ..$ colour  : logi NA
+##   ..$ size    : NULL
+##   ..$ linetype: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_rect" "element"
+##  $ legend.margin       :Class 'unit'  atomic [1:1] 0.2
+##   .. ..- attr(*, "unit")= chr "cm"
+##   .. ..- attr(*, "valid.unit")= int 1
+##  $ legend.key          :List of 4
+##   ..$ fill    : NULL
+##   ..$ colour  : chr "grey80"
+##   ..$ size    : NULL
+##   ..$ linetype: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_rect" "element"
+##  $ legend.key.size     :Class 'unit'  atomic [1:1] 1.2
+##   .. ..- attr(*, "unit")= chr "lines"
+##   .. ..- attr(*, "valid.unit")= int 3
+##  $ legend.key.height   : NULL
+##  $ legend.key.width    : NULL
+##  $ legend.text         :List of 8
+##   ..$ family    : NULL
+##   ..$ face      : NULL
+##   ..$ colour    : NULL
+##   ..$ size      :Class 'rel'  num 0.8
+##   ..$ hjust     : NULL
+##   ..$ vjust     : NULL
+##   ..$ angle     : NULL
+##   ..$ lineheight: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ legend.text.align   : NULL
+##  $ legend.title        :List of 8
+##   ..$ family    : NULL
+##   ..$ face      : chr "bold"
+##   ..$ colour    : NULL
+##   ..$ size      :Class 'rel'  num 0.8
+##   ..$ hjust     : num 0
+##   ..$ vjust     : NULL
+##   ..$ angle     : NULL
+##   ..$ lineheight: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ legend.title.align  : NULL
+##  $ legend.position     : chr "right"
+##  $ legend.direction    : NULL
+##  $ legend.justification: chr "center"
+##  $ legend.box          : NULL
+##  $ panel.background    :List of 4
+##   ..$ fill    : chr "white"
+##   ..$ colour  : logi NA
+##   ..$ size    : NULL
+##   ..$ linetype: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_rect" "element"
+##  $ panel.border        :List of 4
+##   ..$ fill    : logi NA
+##   ..$ colour  : chr "grey50"
+##   ..$ size    : NULL
+##   ..$ linetype: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_rect" "element"
+##  $ panel.grid.major    :List of 4
+##   ..$ colour  : chr "grey90"
+##   ..$ size    : num 0.2
+##   ..$ linetype: NULL
+##   ..$ lineend : NULL
+##   ..- attr(*, "class")= chr [1:2] "element_line" "element"
+##  $ panel.grid.minor    :List of 4
+##   ..$ colour  : chr "grey98"
+##   ..$ size    : num 0.5
+##   ..$ linetype: NULL
+##   ..$ lineend : NULL
+##   ..- attr(*, "class")= chr [1:2] "element_line" "element"
+##  $ panel.margin        :Class 'unit'  atomic [1:1] 0.25
+##   .. ..- attr(*, "unit")= chr "lines"
+##   .. ..- attr(*, "valid.unit")= int 3
+##  $ panel.margin.x      : NULL
+##  $ panel.margin.y      : NULL
+##  $ strip.background    :List of 4
+##   ..$ fill    : chr "grey80"
+##   ..$ colour  : chr "grey50"
+##   ..$ size    : num 0.2
+##   ..$ linetype: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_rect" "element"
+##  $ strip.text.x        :List of 8
+##   ..$ family    : NULL
+##   ..$ face      : NULL
+##   ..$ colour    : NULL
+##   ..$ size      : NULL
+##   ..$ hjust     : NULL
+##   ..$ vjust     : NULL
+##   ..$ angle     : NULL
+##   ..$ lineheight: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ strip.text.y        :List of 8
+##   ..$ family    : NULL
+##   ..$ face      : NULL
+##   ..$ colour    : NULL
+##   ..$ size      : NULL
+##   ..$ hjust     : NULL
+##   ..$ vjust     : NULL
+##   ..$ angle     : num -90
+##   ..$ lineheight: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ plot.background     :List of 4
+##   ..$ fill    : NULL
+##   ..$ colour  : chr "white"
+##   ..$ size    : NULL
+##   ..$ linetype: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_rect" "element"
+##  $ plot.title          :List of 8
+##   ..$ family    : NULL
+##   ..$ face      : NULL
+##   ..$ colour    : NULL
+##   ..$ size      :Class 'rel'  num 1.2
+##   ..$ hjust     : NULL
+##   ..$ vjust     : NULL
+##   ..$ angle     : NULL
+##   ..$ lineheight: NULL
+##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
+##  $ plot.margin         :Class 'unit'  atomic [1:4] 1 1 0.5 0.5
+##   .. ..- attr(*, "unit")= chr "lines"
+##   .. ..- attr(*, "valid.unit")= int 3
+##  - attr(*, "class")= chr [1:2] "theme" "gg"
+##  - attr(*, "complete")= logi TRUE
+```
+
+```r
 #aggregate by interval and day
 act6 <- act3 %>%
         group_by(interval, dow) %>%

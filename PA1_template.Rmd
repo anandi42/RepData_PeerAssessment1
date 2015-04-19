@@ -201,6 +201,7 @@ plotX <- ggplot(act5, aes(x=ymd(date),y=steps)) +
   geom_hline(yintercept=mean(act5$steps), color="red", lty=1, lwd=2, alpha=0.5) 
 plotX <- plotX + labs(title="Total Daily Steps\n From Oct 1 to Dec 1, 2012", 
                       x="Date", y="Total Daily Steps") +
+  geom_smooth(method="loess", alpha=0.5)
   theme_bw()
 
 #aggregate by interval and day
