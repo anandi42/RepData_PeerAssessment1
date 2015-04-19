@@ -68,9 +68,9 @@ bydate <- act_clean %>%
 byint <- act_clean %>%
           group_by(interval) %>%
           summarize(steps=mean(steps))
-#creating an interval datetime variable 
-byint_plot <- byint 
-byint_plot$timeint<-as.POSIXct(sprintf("%04d",byint_plot$interval), tz="UTC", format="%H%M")
+#format the datetime values 
+bydate$date <- as.Date(strptime(bydate$date, format="%Y-%m-%d"))
+byint$timeint<-as.POSIXct(sprintf("%04d",byint$interval), tz="UTC", format="%H%M")
 ```
 
 ##What is mean total number of steps taken per day?  
@@ -102,10 +102,10 @@ grid.arrange(plot1, tableGrob(format(table1, nsmall=2), show.colnames = FALSE), 
 
 ```r
 #calculate maximum avg. steps and its matching interval
-values <- rbind(byint$interval[which.max(byint$steps)], max(byint_plot$steps))
+values <- rbind(byint$interval[which.max(byint$steps)], max(byint$steps))
 table2 <- data.frame(values, row.names=c("Max Interval", "Steps"))
 #plot
-plot2 <- ggplot(data=byint_plot, aes(x=timeint, y=steps))
+plot2 <- ggplot(data=byint, aes(x=timeint, y=steps))
 plot2 <- plot2 + geom_line(color="black") +
   labs(title="Average Daily Activity in 5-minute intervals",
      x="Time of Day",
@@ -174,40 +174,21 @@ bydate2 <- act2 %>%
         summarize(steps=sum(steps)) 
 #create summary table
 values <- rbind(mean(bydate2$steps),median(bydate2$steps))
-tableN <- data.frame(values, row.names=c("New Mean", "New Median"))
-table3 <- rbind(table1, tableN)
+tableA <- data.frame(values, row.names=c("New Mean", "New Median"))
+table3 <- rbind(table1, tableA)
+#Combne the two sets of data for plotting
+bydate <- mutate(bydate, Dataset="Original")
+bydate2 <- mutate(bydate2, Dataset="Imputed")
+bydate3 <- rbind(bydate, bydate2)
 #plot
 plot3 <- ggplot(data=bydate3, aes(x=steps))
-```
-
-```
-## Error in ggplot(data = bydate3, aes(x = steps)): object 'bydate3' not found
-```
-
-```r
 plot3 <- plot3 + geom_histogram(stat="bin", binwidth=max(bydate2$steps)/15,color="dark green", fill="grey") + facet_wrap(~ Dataset) 
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'plot3' not found
-```
-
-```r
 plot3 <- plot3 + labs(title="Total number of steps taken per day", x="Total steps per day", y="Frequency") + geom_vline(xintercept=mean(bydate2$steps), color="blue", lty=2) + geom_vline(xintercept=median(bydate2$steps),color="red", lty=5) + theme_bw()
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'plot3' not found
-```
-
-```r
 #Plot and Table Layout
 grid.arrange(plot3, tableGrob(format(table3,nsmall=2), show.colnames=FALSE), nrow=2, heights=c(1,0.25))
 ```
 
-```
-## Error in arrangeGrob(..., as.table = as.table, clip = clip, main = main, : object 'plot3' not found
-```
+![Before and After Imputing Missing Data](figure/plot3-1.png) 
 
   We can confirm that the mean and median have not changed much in the imputed data. After imputation, the mean and median are closer to each other. We can observe from the histogram that the main effect was to increase the number of counts in the bin that contains the mean and median. 
 
@@ -255,15 +236,14 @@ plot4
 ##Conclusions  
   Using a downloaded .csv file of activity data as the input we can use R, Markdown and Knitr to create a customized analysis output from any giving dataset, which we can then use for several applications. For example, one can generate reports of activity levels as a way to track oneself to a healthier lifestyle. 
   
-  
-###Appendix: Additional plots which may be of interest  
+##Appendix: Additional plots which may be of interest  
   Here's two additional plots that I also made while playing around with this data. In the first one, I plotted the daily steps against the date, and made a very crude attempt at finding a trend in the data. The second plot is just an "expanded" version of the weekend vs. weekday plot.  
 
 
 ```r
-#aggregate summed steps by day
+#aggregate data by day 
 act5 <- act3 %>%
-  group_by(date) %>%
+  group_by(date,dow) %>%
   summarize(steps=sum(steps))
 #plot
 plotX <- ggplot(act5, aes(x=ymd(date),y=steps)) + 
@@ -271,8 +251,7 @@ plotX <- ggplot(act5, aes(x=ymd(date),y=steps)) +
   geom_hline(yintercept=mean(act5$steps), color="red", lty=1, lwd=2, alpha=0.5) 
 plotX <- plotX + labs(title="Total Daily Steps\n From Oct 1 to Dec 1, 2012", 
                       x="Date", y="Total Daily Steps") +
-  theme_bw() +
-  geom_smooth(method="auto")
+  theme_bw()
 
 #aggregate by interval and day
 act6 <- act3 %>%
@@ -291,10 +270,6 @@ plotY <- plotY +
                    labels=date_format("%I:%M%p")) +
   theme_bw()
 grid.arrange(plotX, plotY, nrow=2)
-```
-
-```
-## geom_smooth: method="auto" and size of largest group is <1000, so using loess. Use 'method = x' to change the smoothing method.
 ```
 
 ![Additional plots](figure/extra-1.png) 

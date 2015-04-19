@@ -55,7 +55,7 @@ byint <- act_clean %>%
           summarize(steps=mean(steps))
 #format the datetime values 
 bydate$date <- as.Date(strptime(bydate$date, format="%Y-%m-%d"))
-byint$timeint<-as.POSIXct(sprintf("%04d",byint_plot$interval), tz="UTC", format="%H%M")
+byint$timeint<-as.POSIXct(sprintf("%04d",byint$interval), tz="UTC", format="%H%M")
 ```
 
 ##What is mean total number of steps taken per day?  
@@ -83,7 +83,7 @@ grid.arrange(plot1, tableGrob(format(table1, nsmall=2), show.colnames = FALSE), 
 
 ```{r plot2, echo=TRUE, dependson="setup", cache=TRUE, fig.cap="Daily Activity Pattern"}
 #calculate maximum avg. steps and its matching interval
-values <- rbind(byint$interval[which.max(byint$steps)], max(byint_plot$steps))
+values <- rbind(byint$interval[which.max(byint$steps)], max(byint$steps))
 table2 <- data.frame(values, row.names=c("Max Interval", "Steps"))
 #plot
 plot2 <- ggplot(data=byint, aes(x=timeint, y=steps))
@@ -113,7 +113,7 @@ days$Missing
 data.frame(TotalObs=nrow(activity), CompleteObs=nrow(act_clean), MissingObs=nrow(missing))
 ```
 
-  There are `r nrow(bydate_missing)` missing rows to impute out of a total `r nrow(activity)`, and these missing rows are associated with 8 days out of the 2-month dataset. We replace all the values of `steps` in `missing` with the corresponding mean value from `byint`. If we had a much larger dataset this solution may need to be changed fro something faster. 
+  There are `r nrow(missing)` missing rows to impute out of a total `r nrow(activity)`, and these missing rows are associated with 8 days out of the 2-month dataset. We replace all the values of `steps` in `missing` with the corresponding mean value from `byint`. If we had a much larger dataset this solution may need to be changed fro something faster. 
     
 ```{r imputing, dependson="setup", cache=TRUE}
 for (i in 1:nrow(missing)) {
@@ -133,8 +133,8 @@ bydate2 <- act2 %>%
         summarize(steps=sum(steps)) 
 #create summary table
 values <- rbind(mean(bydate2$steps),median(bydate2$steps))
-tableN <- data.frame(values, row.names=c("New Mean", "New Median"))
-table3 <- rbind(table1, tableN)
+tableA <- data.frame(values, row.names=c("New Mean", "New Median"))
+table3 <- rbind(table1, tableA)
 #Combne the two sets of data for plotting
 bydate <- mutate(bydate, Dataset="Original")
 bydate2 <- mutate(bydate2, Dataset="Imputed")
