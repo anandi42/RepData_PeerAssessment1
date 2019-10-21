@@ -9,7 +9,7 @@ output:
 ##Introduction  
 
   Personal activity monitoring devices, like "[fitness bands](https://www.google.com/search?q=fitness+bands)" allow users to collect a large amount of data about their own physical activity, using measures like number of steps. Sometimes, the fitness device comes with software for basic analyses.  
-  This report provides methods for processing and analyzing such fitness data, and may be beneficial as an example for people who find the commercial pre-packagd analyses limited or wish to connect their data to their own personal applications. The data used in this report was obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).
+  This report provides methods for processing and analyzing fitness data. The content below may be beneficial as an example for people who find the commercial pre-packagd analyses limited or wish to connect their data to their own personal applications. The data used in this report was obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).
 
 Setup steps and packages used:
 ```{r initial, results='hide', message=FALSE, warning=FALSE}
@@ -74,7 +74,7 @@ plot1 <- plot1 +
   geom_vline(xintercept=median(bydate$steps),color="red", lty=5) +
   theme_bw()
 #layout of plot and table
-grid.arrange(plot1, tableGrob(format(table1, nsmall=2), show.colnames = FALSE), nrow=2, heights=c(1,0.25))
+grid.arrange(plot1, tableGrob(format(table1, nsmall=2)), nrow=2, heights=c(1,0.25))
 ```
 
 ##What is the average daily activity pattern?
@@ -95,7 +95,7 @@ plot2 <- plot2 + geom_line(color="black") +
                    labels=date_format("%I:%M%p")) +
   theme_bw() 
 #layout of plot and table
-grid.arrange(plot2, tableGrob(round(table2), show.colnames=FALSE), nrow=2, heights=c(1,0.1))
+grid.arrange(plot2, tableGrob(round(table2)), nrow=2, heights=c(1,0.1))
 ```
 
 
@@ -143,7 +143,7 @@ plot3 <- ggplot(data=bydate3, aes(x=steps))
 plot3 <- plot3 + geom_histogram(stat="bin", binwidth=max(bydate2$steps)/15,color="dark green", fill="grey") + facet_wrap(~ Dataset) 
 plot3 <- plot3 + labs(title="Total number of steps taken per day", x="Total steps per day", y="Frequency") + geom_vline(xintercept=mean(bydate2$steps), color="blue", lty=2) + geom_vline(xintercept=median(bydate2$steps),color="red", lty=5) + theme_bw()
 #Plot and Table Layout
-grid.arrange(plot3, tableGrob(format(table3,nsmall=2), show.colnames=FALSE), nrow=2, heights=c(1,0.25))
+grid.arrange(plot3, tableGrob(format(table3,nsmall=2)), nrow=2, heights=c(1,0.25))
 ```
 
 ##Are there differences in activity patterns between weekdays and weekends?

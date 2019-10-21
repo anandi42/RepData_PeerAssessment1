@@ -9,7 +9,7 @@ output:
 ##Introduction  
 
   Personal activity monitoring devices, like "[fitness bands](https://www.google.com/search?q=fitness+bands)" allow users to collect a large amount of data about their own physical activity, using measures like number of steps. Sometimes, the fitness device comes with software for basic analyses.  
-  This report provides methods for processing and analyzing such fitness data, and may be beneficial as an example for people who find the commercial pre-packagd analyses limited or wish to connect their data to their own personal applications. The data used in this report was obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).
+  This report provides methods for processing and analyzing fitness data. The content below may be beneficial as an example for people who find the commercial pre-packagd analyses limited or wish to connect their data to their own personal applications. The data used in this report was obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).
 
 Setup steps and packages used:
 
@@ -90,10 +90,10 @@ plot1 <- plot1 +
   geom_vline(xintercept=median(bydate$steps),color="red", lty=5) +
   theme_bw()
 #layout of plot and table
-grid.arrange(plot1, tableGrob(format(table1, nsmall=2), show.colnames = FALSE), nrow=2, heights=c(1,0.25))
+grid.arrange(plot1, tableGrob(format(table1, nsmall=2)), nrow=2, heights=c(1,0.25))
 ```
 
-![Distribution of total daily steps](figure/plot1-1.png) 
+![Distribution of total daily steps](PA1_template_files/figure-html/plot1-1.png)
 
 ##What is the average daily activity pattern?
 
@@ -114,10 +114,10 @@ plot2 <- plot2 + geom_line(color="black") +
                    labels=date_format("%I:%M%p")) +
   theme_bw() 
 #layout of plot and table
-grid.arrange(plot2, tableGrob(round(table2), show.colnames=FALSE), nrow=2, heights=c(1,0.1))
+grid.arrange(plot2, tableGrob(round(table2)), nrow=2, heights=c(1,0.1))
 ```
 
-![Daily Activity Pattern](figure/plot2-1.png) 
+![Daily Activity Pattern](PA1_template_files/figure-html/plot2-1.png)
 
 
 ##Imputing missing values  
@@ -184,10 +184,10 @@ plot3 <- ggplot(data=bydate3, aes(x=steps))
 plot3 <- plot3 + geom_histogram(stat="bin", binwidth=max(bydate2$steps)/15,color="dark green", fill="grey") + facet_wrap(~ Dataset) 
 plot3 <- plot3 + labs(title="Total number of steps taken per day", x="Total steps per day", y="Frequency") + geom_vline(xintercept=mean(bydate2$steps), color="blue", lty=2) + geom_vline(xintercept=median(bydate2$steps),color="red", lty=5) + theme_bw()
 #Plot and Table Layout
-grid.arrange(plot3, tableGrob(format(table3,nsmall=2), show.colnames=FALSE), nrow=2, heights=c(1,0.25))
+grid.arrange(plot3, tableGrob(format(table3,nsmall=2)), nrow=2, heights=c(1,0.25))
 ```
 
-![Before and After Imputing Missing Data](figure/plot3-1.png) 
+![Before and After Imputing Missing Data](PA1_template_files/figure-html/plot3-1.png)
 
 ##Are there differences in activity patterns between weekdays and weekends?
 
@@ -215,6 +215,13 @@ act4plot$timeint<-parse_date_time(paste("2012-10-01",sprintf("%04d",act4$interva
 plot4 <- ggplot(data=act4plot, aes(x=timeint, y=steps)) + 
   geom_line(color="dark blue", type="l", aes(group=dow2)) + 
   facet_grid(dow2~., scales="free", space="free")
+```
+
+```
+## Warning: Ignoring unknown parameters: type
+```
+
+```r
 plot4 <- plot4 + 
   labs(x="Time of Day", 
        y="Mean Steps", 
@@ -225,7 +232,7 @@ plot4 <- plot4 +
 plot4
 ```
 
-![Daily activity on Weekdays vs. Weekends](figure/plot4-1.png) 
+![Daily activity on Weekdays vs. Weekends](PA1_template_files/figure-html/plot4-1.png)
 
 
   From this plot, we see that on weekends, there are more intervals where the number of steps is >100, which implies that the weekends contain more sustained activity over the day than weekdays. On weekdays, there is a peak of activity in the mornings, around 8-9AM. This pattern fits with a person who takes a walk every weekday morning, or walks to work, and then engages in a lot of activity over the weekend.
@@ -260,6 +267,13 @@ act6plot$timeint<-parse_date_time(paste("2012-10-01",sprintf("%04d",act6plot$int
 plotY <- ggplot(data=act6plot, aes(x=timeint, y=steps)) + 
   geom_line(color="dark blue", type="l", aes(group=dow)) + 
   facet_wrap(~ dow)
+```
+
+```
+## Warning: Ignoring unknown parameters: type
+```
+
+```r
 plotY <- plotY + 
   labs(x="Time of Day", 
        y="Mean Steps", 
@@ -270,5 +284,5 @@ plotY <- plotY +
 grid.arrange(plotX, plotY, nrow=2)
 ```
 
-![Additional plots](figure/extra-1.png) 
+![Additional plots](PA1_template_files/figure-html/extra-1.png)
 
